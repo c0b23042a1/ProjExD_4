@@ -249,6 +249,23 @@ class Score:
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
 
+class EMP:
+    def __init__(self, emys: pg.sprite.Group, bombs: pg.sprite.Group, screen: pg.Surface):
+        self.image = pg.Surface((WIDTH, HEIGHT))
+        pg.draw.rect(self.image, (255, 255, 0), (0, 0, WIDTH, HEIGHT))
+        self.image.set_alpha(128)
+        self.rect = self.image.get_rect()
+        for emy in emys: 
+            emy.interval = float("inf")
+            emy.image = pg.transform.laplacian(emy.image)
+            emy.image.set_colorkey((0, 0, 0))
+        for bomb in bombs:
+            bomb.speed *= 0.5
+            bomb.state = "inactive"
+        screen.blit(self.image, self.rect)
+        pg.display.update()
+        time.sleep(0.05)
+
 
 class Gravity(pg.sprite.Sprite):
     def __init__(self, life):
@@ -292,10 +309,15 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+                
             if key_lst[pg.K_RETURN] and score.value >= 200:
                 gravity_group.add(Gravity(400))
                 score.value -= 200
 
+            if event.type == pg.KEYDOWN and event.key ==pg.K_e and score.value > 20:
+                score.value -= 20
+                EMP(emys, bombs, screen)
+        
             if event.type == pg.KEYDOWN and event.key == pg.K_RSHIFT and bird.state != "hyper" and score.value >= 100:
             # 右シフトキーが押され、すでに無敵状態ではなく、スコアが100以上の場合
                 bird.state = "hyper"  # 無敵化
