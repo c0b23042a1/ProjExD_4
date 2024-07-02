@@ -277,14 +277,9 @@ class Gravity(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         
     def update(self):
-
-
         self.life -= 1
         if self.life == 0:
             self.kill()
-
-        
-        
 
 
 def main():
@@ -355,20 +350,10 @@ def main():
                         exps.add(Explosion(hit_bomb, 50))
                         score.value += 1
         
-
-
-        
-    
         for emy in pg.sprite.groupcollide(emys, gravity_group, True, False).keys():
             exps.add(Explosion(emy, 100))  # 爆発エフェクト
         for bomb in pg.sprite.groupcollide(bombs, gravity_group, True, False).keys():
             exps.add(Explosion(bomb, 100))  # 爆発エフェクト
-
-    
-            
-        
-        
-            
 
         bird.update(key_lst, screen)
         beams.update()
