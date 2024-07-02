@@ -243,15 +243,14 @@ class Score:
 
 
 class Gravity(pg.sprite.Sprite):
-    def __init__(self, life, screen):
+    def __init__(self, life):
         super().__init__()
         self.life = life
         self.image = pg.Surface((WIDTH, HEIGHT))
         pg.draw.rect(self.image, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
         self.image.set_alpha(128)
         self.rect = self.image.get_rect()
-        screen.blit(self.image, self.rect)
-
+        
     def update(self):
 
 
@@ -274,7 +273,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
-    glavity = pg.sprite.Group()
+    gravity_group = pg.sprite.Group()
 
     tmr = 0
     clock = pg.time.Clock()
@@ -285,8 +284,13 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if key_lst[pg.K_RETURN] and score.value >= 200:
+                gravity_group.add(Gravity(400))
+                score.value -= 200
+
         screen.blit(bg_img, [0, 0])
 
+        
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy())
 
@@ -314,14 +318,13 @@ def main():
 
 
         
-        if (event.type == pg.KEYDOWN and event.key == pg.K_RETURN and score.value >= 200):
-            glavity.add(Gravity(400, screen))
-            for emy in pg.sprite.groupcollide(emys, glavity, True, False).keys():
-                exps.add(Explosion(emy, 100))  # 爆発エフェクト
-            for bomb in pg.sprite.groupcollide(bombs, glavity, True, False).keys():
-                exps.add(Explosion(bomb, 100))  # 爆発エフェクト
+    
+        for emy in pg.sprite.groupcollide(emys, gravity_group, True, False).keys():
+            exps.add(Explosion(emy, 100))  # 爆発エフェクト
+        for bomb in pg.sprite.groupcollide(bombs, gravity_group, True, False).keys():
+            exps.add(Explosion(bomb, 100))  # 爆発エフェクト
 
-        
+    
             
         
         
@@ -336,8 +339,8 @@ def main():
         bombs.draw(screen)
         exps.update()
         exps.draw(screen)
-        glavity.update()
-        glavity.draw(screen)
+        gravity_group.update()
+        gravity_group.draw(screen)
         score.update(screen)
 
         pg.display.update()
