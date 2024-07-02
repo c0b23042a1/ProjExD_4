@@ -87,6 +87,7 @@ class Bird(pg.sprite.Sprite):
     def update(self, key_lst: list[bool], screen: pg.Surface):
         """
         押下キーに応じてこうかとんを移動させる
+        無敵状態であるときの画像の変化と残り時間の管理を行う
         引数1 key_lst：押下キーの真理値リスト
         引数2 screen：画面Surface
         """
@@ -273,9 +274,11 @@ def main():
         screen.blit(bg_img, [0, 0])
 
         if key_lst[pg.K_RSHIFT] and bird.state != "hyper" and score.value >= 100:
-            bird.state = "hyper"
-            bird.hyper_life = 500
-            score.value -= 100
+            # 右シフトキーが押され、すでに無敵状態ではなく、スコアが100以上の場合
+            bird.state = "hyper"  # 無敵化
+            bird.hyper_life = 500  # 無敵時間の設定
+            score.value -= 100  # 無敵化の消費スコア
+
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy())
 
@@ -291,16 +294,16 @@ def main():
 
         for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():
             exps.add(Explosion(bomb, 50))  # 爆発エフェクト
-            score.value += 100  # 1点アップ
+            score.value += 1  # 1点アップ
 
         if len(pg.sprite.spritecollide(bird, bombs, False)) != 0:
-                if bird.state != "hyper":
+                if bird.state != "hyper":  # 無敵状態でない場合
                     bird.change_img(8, screen) # こうかとん悲しみエフェクト
                     score.update(screen)
                     pg.display.update()
                     time.sleep(2)
                     return
-                else:
+                else:  # 無敵状態であるときの追加の処理
                     for hit_bomb in pg.sprite.spritecollide(bird, bombs, True):
                         exps.add(Explosion(hit_bomb, 50))
                         score.value += 1
