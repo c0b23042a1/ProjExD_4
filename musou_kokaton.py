@@ -271,13 +271,12 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
-        screen.blit(bg_img, [0, 0])
-
-        if key_lst[pg.K_RSHIFT] and bird.state != "hyper" and score.value >= 100:
+            if event.type == pg.KEYDOWN and event.key == pg.K_RSHIFT and bird.state != "hyper" and score.value >= 100:
             # 右シフトキーが押され、すでに無敵状態ではなく、スコアが100以上の場合
-            bird.state = "hyper"  # 無敵化
-            bird.hyper_life = 500  # 無敵時間の設定
-            score.value -= 100  # 無敵化の消費スコア
+                bird.state = "hyper"  # 無敵化
+                bird.hyper_life = 500  # 無敵時間の設定
+                score.value -= 100  # 無敵化の消費スコア
+        screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy())
